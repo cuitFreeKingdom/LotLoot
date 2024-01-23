@@ -74,7 +74,7 @@ export abstract class ContractBase {
   ): any {
     const contract = new ethers.Contract(
       contractAddress || this.contractAddress,
-      this.contractABI
+      this.contractABI.abi
     );
 
     // const signer = this.createSigner(

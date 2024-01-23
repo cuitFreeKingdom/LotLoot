@@ -10,11 +10,11 @@ import { ContractParkingStore } from "../contract/contracts/ContractParkingStore
 import { ContractCarERC721 } from "../contract/contracts/ContractCarERC721";
 import { ContractParkingERC721 } from "../contract/contracts/ContractParkingERC721";
 import { ContractCarStore } from "../contract/contracts/ContractCarStore";
-import { ContractLotLoot } from "../contract/contracts/ContractLotLoot";
 import { ContractLLTToken } from "../contract/contracts/ContractLLTToken";
 import { ContractERC6551Registry } from "../contract/contracts/ContractRegistry6551";
 import { ContractComponent } from "../contract/contracts/ContractComponent";
 import { ContractComponentStore } from "../contract/contracts/ContractComponentStore";
+import { ContractLotLoot } from "../contract/contracts/ContractLotLoot";
 
 export class ContractData extends Singleton {
   private _carStoreContractIns: any = null!;
