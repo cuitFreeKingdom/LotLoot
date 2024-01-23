@@ -6,10 +6,11 @@
       <img :src="require('../../assets/left2.png')" class="right" v-show="isDisplay">
     </div>
     <div class="cars-show" :class="{ carsShowHover: isDisplay }">
-      <img src="../../assets/game/red-car.png" class="rcar">
-      <img src="../../assets/game/yellow-car.png" class="ycar">
-      <img src="../../assets/game/yellow-car.png" class="ycar">
-      <div class="purchase-btn ripple" v-show="isDisplay">Buy Car</div>
+      <div v-for="(item, index) in userCarList">
+        <img v-if="index === 0" src="../../assets/game/red-car.png" class="rcar">
+        <img v-else src="../../assets/game/yellow-car.png" class="ycar">
+      </div>
+      <div class="purchase-btn" v-show="isDisplay" @click="funcFreeMintCar">Buy Car</div>
     </div>
     <div class="middle-info" v-show="isDisplay">
       <img src="../../assets/game/red-car.png" class="rcar-info">
@@ -23,12 +24,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { contractData } from '@/data/ContractData';
+import { playerData } from '@/data/PlayerData';
+import { walletData } from '@/data/WalletData';
+import { GameEventBuyCar } from '@/events/GameEventBuyCar';
+import { GameEventWalletAccountChanged } from '@/events/GameEventWalletAccountChanged';
+import { GameEventWalletConnected } from '@/events/GameEventWalletConnected';
+import { EventBus } from '@/plugins/EventBus';
+import { Loading } from '@/plugins/Loading';
+import { Toast } from '@/plugins/Toast';
+import { onBeforeMount, onUnmounted, ref } from 'vue';
+
+onBeforeMount(async () => {
+  EventBus.instance.on(GameEventWalletConnected.eventAsync, refreshCar);
+  EventBus.instance.on(GameEventBuyCar.eventAsync, onCarBought);
+  EventBus.instance.on(
+    GameEventWalletAccountChanged.eventAsync,
+    refreshCar
+  );
+  if (walletData.address) {
+    refreshCar()
+    console.log('components', await playerData.getPlayerComponents(walletData.address))
+  }
+})
+onUnmounted(() => {
+  EventBus.instance.off(GameEventBuyCar.eventAsync, onCarBought);
+  EventBus.instance.off(GameEventWalletConnected.eventAsync, refreshCar);
+  EventBus.instance.off(
+    GameEventWalletAccountChanged.eventAsync,
+    refreshCar
+  );
+});
+const onCarBought = async () => {
+  await refreshCar();
+  Toast.success(`mint car success.`)
+}
+const userCarList = ref([]);
+const refreshCar = async () => {
+  const player = await playerData.getPlayerData(walletData.address);
+  let cars = player
+    ? player.cars.map((car: { tokenId: any; status: any; parkingTokenId: number; }) => {
+      return {
+        tokenId: car.tokenId,
+        status: car.status,
+        ParkingAddress:
+          car.parkingTokenId === 0 ? "IDLE" : car.parkingTokenId,
+        url: "0",
+        ProspectiveEarnings: 999,
+      };
+    })
+    : [];
+  //@ts-ignore
+  userCarList.value = cars;
+  Loading.close();
+};
 
 const isDisplay = ref<boolean>(false);
 const switchDetails = () => {
   isDisplay.value = !isDisplay.value;
 }
+
+const funcFreeMintCar = async () => {
+  Loading.open();
+  try {
+    await contractData.carStoreContract.buyCar();
+  } catch (e) {
+    Loading.close();
+    console.error(e);
+    Toast.error("Buy car failed");
+  }
+};
 </script>
 
 <style scoped lang="less">
@@ -103,8 +168,8 @@ const switchDetails = () => {
     display: flex;
     align-items: center;
     flex-direction: column;
-    flex-wrap: wrap;
-
+    flex-wrap: nowrap;
+    overflow-y: hidden;
 
     .rcar {
       width: 240px;
@@ -117,7 +182,9 @@ const switchDetails = () => {
     }
 
     .purchase-btn {
+      display: block;
       margin-top: 30px;
+      margin-bottom: 30px;
       width: 150px;
       height: 50px;
       font-size: 20px;
@@ -134,7 +201,8 @@ const switchDetails = () => {
 
   .carsShowHover {
     border: 2px #ffffff solid;
-    height: 630px;
+    height: 620px;
+    overflow-y: auto;
   }
 
   .middle-info {
@@ -203,36 +271,5 @@ const switchDetails = () => {
   animation-name: right;
   animation-duration: .25s;
   animation-fill-mode: forwards;
-}
-
-.ripple {
-  position: relative;
-  //隐藏溢出的径向渐变背景
-  overflow: hidden;
-}
-
-.ripple:after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  //设置径向渐变
-  background-image: radial-gradient(circle, #666 10%, transparent 10.01%);
-  background-repeat: no-repeat;
-  background-position: 50%;
-  transform: scale(10, 10);
-  opacity: 0;
-  transition: transform .3s, opacity .5s;
-}
-
-.ripple:active:after {
-  transform: scale(0, 0);
-  opacity: .3;
-  //设置初始状态
-  transition: 0s;
 }
 </style>
