@@ -1,0 +1,50 @@
+version: "3"
+networks:
+    lotloot:
+        driver: bridge
+volumes:
+  lotloot_db:
+services:
+    db:
+        image: mysql:8
+        command: --default-authentication-plugin=caching_sha2_password
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: lotloot
+            MYSQL_USER: test
+            MYSQL_PASSWORD: test
+#        ports:
+#        - "3306:3306"
+        volumes:
+          - lotloot_db:/var/lib/mysql
+          - ./sql:/docker-entrypoint-initdb.d
+        healthcheck:
+          test: ["CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]
+          interval: 5s
+          timeout: 20s
+          retries: 30
+        networks:
+            - lotloot
+    web:
+        build: .
+        ports:
+          - "8080:5000"
+        depends_on:
+          db:
+             condition: service_healthy
+          clash:
+             condition: service_started
+        networks:
+          - lotloot
+    clash:
+      image: dreamacro/clash
+      volumes:
+        - ./clash.yaml:/root/.config/clash/config.yaml
+      ports:
+#        - "9432:7890"
+        - "9090:9090"
+      restart: always
+      networks:
+        - lotloot
+
+

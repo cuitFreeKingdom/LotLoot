@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aloneatwar.xdemo.mapper.UserMapper">
+
+
+    <update id="save">
+        insert into userinfo(user_id,screen_name,address) values (#{userId},#{screenName},#{address})
+    </update>
+
+
+    <select id="queryByName" resultType="com.aloneatwar.xdemo.bean.pojo.UserInfo">
+        select * from userinfo where screen_name like CONCAT('%',#{name},'%')
+    </select>
+
+    <select id="queryById" resultType="com.aloneatwar.xdemo.bean.pojo.UserInfo">
+        SELECT * FROM userinfo WHERE user_id = #{id}
+    </select>
+    <select id="queryByAddressList" resultType="com.aloneatwar.xdemo.bean.pojo.UserInfo">
+        select * from userinfo where address in
+        <foreach collection="friendList" index="index" item="address" open="(" separator="," close=")">
+            #{address}
+        </foreach>
+    </select>
+
+</mapper>

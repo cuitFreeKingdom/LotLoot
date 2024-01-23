@@ -1,0 +1,111 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IERC7527Factory",
+  "sourceName": "contracts/interface/IERC7527Factory.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address payable",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "currency",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "premium",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address",
+                  "name": "feeRecipient",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "mintFeePercent",
+                  "type": "uint16"
+                },
+                {
+                  "internalType": "uint16",
+                  "name": "burnFeePercent",
+                  "type": "uint16"
+                }
+              ],
+              "internalType": "struct Asset",
+              "name": "asset",
+              "type": "tuple"
+            },
+            {
+              "internalType": "bytes",
+              "name": "immutableData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initData",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct AgencySettings",
+          "name": "agencySettings",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "immutableData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initData",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct AppSettings",
+          "name": "appSettings",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "deployWrap",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
