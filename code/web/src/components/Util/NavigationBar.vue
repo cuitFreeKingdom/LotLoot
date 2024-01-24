@@ -73,6 +73,12 @@ watch(route.currentRoute, (newValue, oldValue) => {
 </script>
 
 <style scoped lang="less">
+@media screen and (max-width: 1280px) {
+  .bottom-navigation {
+    display: none !important;
+  }
+}
+
 .bottom-navigation {
   position: fixed;
   height: 231px;

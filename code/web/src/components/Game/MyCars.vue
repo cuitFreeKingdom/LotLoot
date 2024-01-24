@@ -34,7 +34,13 @@ import { EventBus } from '@/plugins/EventBus';
 import { Loading } from '@/plugins/Loading';
 import { Toast } from '@/plugins/Toast';
 import { onBeforeMount, onUnmounted, ref } from 'vue';
-
+interface CarItem {
+  tokenId: number;
+  status: any;
+  ParkingAddress: string | number;
+  url: string;
+  ProspectiveEarnings: number;
+}
 onBeforeMount(async () => {
   EventBus.instance.on(GameEventWalletConnected.eventAsync, refreshCar);
   EventBus.instance.on(GameEventBuyCar.eventAsync, onCarBought);
@@ -43,8 +49,7 @@ onBeforeMount(async () => {
     refreshCar
   );
   if (walletData.address) {
-    refreshCar()
-    console.log('components', await playerData.getPlayerComponents(walletData.address))
+    refreshCar();
   }
 })
 onUnmounted(() => {
@@ -57,13 +62,14 @@ onUnmounted(() => {
 });
 const onCarBought = async () => {
   await refreshCar();
-  Toast.success(`mint car success.`)
+  Toast.success(`Mint car success.`)
 }
-const userCarList = ref([]);
+
+const userCarList = ref<CarItem[]>();
 const refreshCar = async () => {
   const player = await playerData.getPlayerData(walletData.address);
   let cars = player
-    ? player.cars.map((car: { tokenId: any; status: any; parkingTokenId: number; }) => {
+    ? player.cars.map((car: { tokenId: number; status: any; parkingTokenId: number; }) => {
       return {
         tokenId: car.tokenId,
         status: car.status,
@@ -76,8 +82,13 @@ const refreshCar = async () => {
     : [];
   //@ts-ignore
   userCarList.value = cars;
+  console.log('player cars info', await getComId(userCarList.value[0].tokenId))
   Loading.close();
 };
+
+const getComId = async (tokenId: number) => {
+  return await playerData.getComponentId(tokenId);
+}
 
 const isDisplay = ref<boolean>(false);
 const switchDetails = () => {

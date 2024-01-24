@@ -83,7 +83,7 @@ export class ContractData extends Singleton {
   }
   public get componentStoreContract(): any {
     if (!this._componentStoreContractIns) {
-      this._componentStoreContractIns = this.componentStoreContract.create();
+      this._componentStoreContractIns = ContractComponentStore.create();
     }
     return this._componentStoreContractIns;
   }

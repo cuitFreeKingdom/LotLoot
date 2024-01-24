@@ -1,19 +1,51 @@
 <template>
   <div class="address-item" :class="{ addressItemDetail: isDisplay }">
-    <p class="name" @click="swithcDisplay" v-show="!isEdit">秋名山车神</p>
-    <input class="edit-note" v-show="isEdit" type="text" value="秋名山车神" />
-    <p class="address" v-show="isDisplay && !isEdit">0x2BDa......3685</p>
-    <input class="edit-addr" v-show="isEdit" type="text" value="0x2BDa......3685">
+    <p class="name" @click="swithcDisplay" v-show="!isEdit">{{ props.notes }}</p>
+    <input class="edit-note" v-show="isEdit" type="text" v-model="editNotes" placeholder="edit notes" />
+    <p class="address" v-show="isDisplay">{{ getAddressSnapshot(props.address) }}</p>
+    <!-- <input class="edit-addr" v-show="isEdit" type="text" :value="editAddress"> -->
     <div class="operation-btn" v-show="isDisplay">
-      <div class="btn ripple">copy</div>
+      <div class="btn ripple" @click="copyAddrItem">copy</div>
       <div class="btn ripple" @click="switchEdit">edit</div>
-      <div class="btn ripple">delete</div>
+      <div class="btn ripple" @click="deleteItem">delete</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { StringUtil } from '@/core/utils/StringUtil';
+import { updateFriendNotes } from '@/request/addressBook';
+import { walletData } from '@/data/WalletData';
+import { Toast } from '@/plugins/Toast';
+import copy from 'copy-to-clipboard';
+
+interface Props {
+  notes: string,
+  address: string,
+};
+const props = withDefaults(defineProps<Props>(), {
+  notes: '秋名山车神',
+  address: '0xc8a715389d408A......'
+});
+const emit = defineEmits<{
+  (e: 'delete'): void,
+  (e: 'edit'): void,
+  (e: 'refresh'): void,
+}>();
+const getAddressSnapshot = (str: string) => {
+  if (!StringUtil.isEmpty(str)) {
+    return StringUtil.getAddressSnapshot(str);
+  }
+  return '0xc8a715389d408A......';
+}
+
+const editNotes = ref<string>("");
+// const editAddress = ref<string>(props.address);
+
+const deleteItem = () => {
+  emit('delete');
+}
 
 const isDisplay = ref<boolean>(false);
 const swithcDisplay = () => {
@@ -21,8 +53,31 @@ const swithcDisplay = () => {
 }
 
 const isEdit = ref<boolean>(false);
-const switchEdit = () => {
+const switchEdit = async () => {
   isEdit.value = !isEdit.value;
+  if (!isEdit.value) {
+    if (StringUtil.isEmpty(editNotes.value)) {
+      Toast.warn('Notes cannot be empty!')
+      return;
+    }
+    const res = await updateFriendNotes({
+      address: walletData.address,
+      friendAddress: props.address,
+      notes: editNotes.value
+    });
+    // @ts-ignore
+    if (res.code === '200' && res.data) {
+      emit('refresh');
+      Toast.success("Edit notes success.");
+    } else {
+      Toast.error("Edit notes error!");
+    }
+  }
+}
+
+const copyAddrItem = () => {
+  copy(props.address);
+  Toast.success('Copied to clipboard!')
 }
 </script>
 

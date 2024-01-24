@@ -1,7 +1,13 @@
 <template>
   <div class="home-page">
     <div class="garage">
-      <div class="car" v-for="(item, index) in playerParkingList" :key="index">{{ item.tokenId }}</div>
+      <div class="car" v-for="(item, index) in playerParkingList" :key="index">
+        <img class="elec" src="../../assets/game/elec-green.png" />
+        <div class="bottom-btn" v-show="item.status === 2">Leave</div>
+        <div class="bottom-btn park-btn" v-show="item.status === 1" @click="parkCar(item)">Park</div>
+        <div class="bottom-btn ticket-btn" v-show="item.status !== 1 && item.status !== 2">Ticket</div>
+        <img src="../../assets/topview/00.png" class="parking-car" v-show="item.status === 2">
+      </div>
       <div class="add-car" @click="buyParkingPlace"><img :src="require('../../assets/adddto.png')" class="add-png"></div>
     </div>
 
@@ -23,23 +29,34 @@ import { GameEventBuyCar } from "@/events/GameEventBuyCar";
 import { GameEventWalletConnected } from "@/events/GameEventWalletConnected";
 import { GameEventBuyParkings } from "@/events/GameEventBuyParkings";
 import { GameEventWalletAccountChanged } from "@/events/GameEventWalletAccountChanged";
+import { GameEventParkCar } from "@/events/GameEventParkCar";
 
+interface CarItem {
+  tokenId: number;
+  status: any;
+  ParkingAddress: string | number;
+  url: string;
+  ProspectiveEarnings: number;
+}
 onBeforeMount(async () => {
   EventBus.instance.on(GameEventBuyCar.eventAsync, onCarBought);
   EventBus.instance.on(GameEventWalletConnected.eventAsync, refreshCar);
   EventBus.instance.on(GameEventBuyParkings.eventAsync, onParkingBought);
+  EventBus.instance.on(GameEventParkCar.eventAsync, onCarParked);
   EventBus.instance.on(
     GameEventWalletAccountChanged.eventAsync,
     refreshHome
   );
   if (walletData.address) {
-    refreshHome()
+    refreshCar();
+    refreshHome();
   }
 })
 onUnmounted(() => {
   EventBus.instance.off(GameEventWalletConnected.eventAsync, refreshCar);
   EventBus.instance.off(GameEventBuyCar.eventAsync, onCarBought);
   EventBus.instance.off(GameEventBuyParkings.eventAsync, onParkingBought);
+  EventBus.instance.off(GameEventParkCar.eventAsync, onCarParked);
   EventBus.instance.off(
     GameEventWalletAccountChanged.eventAsync,
     refreshHome
@@ -51,7 +68,7 @@ const onCarBought = async () => {
   await refreshCar();
   Toast.success(`mint car success.`)
 }
-const userCarList = ref([]);
+const userCarList = ref<CarItem[]>([]);
 const refreshCar = async () => {
   const player = await playerData.getPlayerData(walletData.address);
   let cars = player
@@ -66,8 +83,8 @@ const refreshCar = async () => {
       };
     })
     : [];
-  //@ts-ignore
   userCarList.value = cars;
+  console.log('current carlist', userCarList.value)
   Loading.close();
 };
 
@@ -80,6 +97,7 @@ const onParkingBought = async () => {
 
   Toast.success(`mint parking success.`)
 };
+// refresh parking position
 const refreshHome = async () => {
   const player = await playerData.getPlayerData(walletData.address);
 
@@ -93,20 +111,76 @@ const refreshHome = async () => {
         tokenId: parking.tokenId,
       };
     });
+    console.log('player parking list', playerParkingList.value)
   }
 };
 const buyParkingPlace = async () => {
   // TODO Dialog
   Loading.open();
   try {
-    // BUG
+    // BUG return undifined
     await contractData.parkingStoreContract.buyParkings();
   } catch (e) {
-    Loading.close();
     Toast.error("Buy parking place failed.");
     console.error(e);
+  } finally {
+    Loading.close();
   }
 };
+
+const parkCar = async (item: ParkingDTO) => {
+  try {
+    Loading.open();
+    // 获取车位停车信息
+    const res = await contractData.lotLootContract.getParkingCar(item.tokenId);
+    if (res !== 0) {
+      Toast.warn('There is already a car in this parking space!');
+      return;
+    }
+    if (userCarList.value.length === 0) {
+      Toast.warn("You have not cars!");
+      return;
+    } else {
+      const flag = chooseParkCar();
+      if (flag === -1) {
+        Toast.warn('You have parked all your cars!');
+        return;
+      } else {
+        console.log('ddd', flag)
+        console.log('park outcome', await contractData.lotLootContract.park(userCarList.value[flag].tokenId, item.tokenId));
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  } finally {
+    Loading.close();
+  }
+}
+const onCarParked = async () => {
+  await refreshCar();
+}
+const chooseParkCar = (): number => {
+  try {
+    if (userCarList.value.length > 0) {
+      for (let i = 0; i < userCarList.value.length; i++) {
+        if (userCarList.value[i].ParkingAddress === 'IDLE') {
+          return i;
+        }
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return -1;
+}
+
+const unParkCar = async () => {
+  try {
+
+  } catch (error) {
+
+  }
+}
 </script>
 
 <style scoped lang="less">
@@ -131,6 +205,52 @@ const buyParkingPlace = async () => {
     height: 290px;
     width: 220px;
     background: url("../../assets/parking.jpg");
+    position: relative;
+
+    .elec {
+      position: absolute;
+      top: 6px;
+      left: 88px;
+      width: 45px;
+      height: 30px;
+    }
+
+    .bottom-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 60px;
+      width: 100px;
+      height: 30px;
+      background-color: #2687FA;
+      color: #FFFFFF;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 30px;
+      text-align: center;
+      border-radius: 3px;
+      z-index: 10;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .ticket-btn {
+      background-color: rgb(255, 79, 128);
+    }
+
+    .park-btn {
+      background-color: rgb(233, 207, 39);
+    }
+
+    .parking-car {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      height: 270px;
+      width: 200px;
+      background-color: rgba(38, 189, 57, 0.5);
+    }
   }
 
   .add-car {
