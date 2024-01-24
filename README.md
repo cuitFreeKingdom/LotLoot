@@ -1,5 +1,19 @@
 [TOC]
 
+# 官网信息
+
+**🦅 Twitter:**  https://twitter.com/Lotloot_gamefi
+
+**🌎 Website:**  https://lot-loot.vercel.app/
+
+💬 github: https://github.com/cuitFreeKingdom/LotLoot
+
+✅ gitee: https://gitee.com/du-mingsong/warp-hack-thon （latest）
+
+✅ 白皮书: https://gitee.com/du-mingsong/warp-hack-thon/blob/master/%E7%99%BD%E7%9A%AE%E4%B9%A6.md （latest）
+
+✅ whitePaper：https://gitee.com/du-mingsong/warp-hack-thon/blob/master/WhitePaper.md
+
 # 项目规范
 
 ## 协作模式
@@ -15,26 +29,6 @@
 根目录下的 readme 如需更改先给我说一下
 
 doc 下属于自己的目录随便修改
-
-### 错误的提交
-
-TIP:若修改的部分是自己的目录不涉及到公共部分，可以不按照 gitflow 的模型，直接修改 devlop 分支然后合并到 master 分支然后推送就可以了。
-
-1.绕过 develop 分支而直接修改了 master 分支内容
-
-正确的方式应该是在 sourcetree 中利用 flow 模型的快捷操作模式（git 工作流）进行提交
-
-![image-20231228002833977](img/image-20231228002833977.png)
-
-提交顺序属于自己的 feature 分支->develop 分支->release 分支->master 分支
-
-2.feature 分支和 release 分支不要提交到仓库上，在完成一个功能的开发后，在本地根据 souretree 的快捷键完成 devlop->feature->release->(此时在 release 分支上使用快捷键，souretree 会自动将 release 分支上的更新同时更新到 master 和 devlop 分支上并自动删除 release 分支)。所以最后推送到线上的分支只剩下 master 分支和 devlop 分支
-
-![image-20240101155949786](img/image-20240101155949786.png)
-
-## 目录树（根据项目进度持续更新）
-
-doc->用于保存文档
 
 **注意事项**
 
@@ -53,7 +47,7 @@ doc->用于保存文档
 
 4.[项目方宣讲录屏](https://pan.baidu.com/s/1djVDixRaE5bBsRi1LZxZWw?pwd=9aee)
 
-## 主办方资料
+## 黑客松要求
 
 [Link1](https://ethereum-magicians.org/t/erc-7527-token-bound-function-oracle-amm-contract/15950)
 
@@ -63,7 +57,7 @@ doc->用于保存文档
 
 ![1V1IEJ%@AW$CY7U613{0@IN_tmb](img/1V1IEJ%25@AW$CY7U613%7B0@IN_tmb.jpg)
 
-## park
+## 初代停车游戏
 
 [仓库地址](https://github.com/WeDAOLabs/ParkingSpaceBattle.git)
 
@@ -73,11 +67,9 @@ doc->用于保存文档
 
 # 任务进度及分工情况
 
-## 分工情况
+### 个人介绍
 
 大家先把自己的资料放在这个位置，方便做 ppt 的同学使用（统一格式，白底照片）
-
-### 个人介绍
 
 **杜明松**:
 
@@ -121,7 +113,7 @@ UI 设计，软件工程专业在读，熟悉软件项目管理流程。有丰�
 
 智能合约工程师，区块链工程专业在读，成都信息工程大学区块链协会创始人之一。了解 solidity，JS，python 爬虫，逆向等技术，有合约开发经验，了解合约基本漏洞及其修复，以及复现过 UniswapV2，opensea 等以太坊知名项目源码。曾获 eth 杭州 L2 赛道第二名，miniHack house 第三名。
 
-## 任务进度
+### 进度推进模式
 
 第一阶段
 
@@ -138,11 +130,3 @@ UI 设计，软件工程专业在读，熟悉软件项目管理流程。有丰�
 产品组主要负责 PPT，文档编写，原型图等工作
 
 项目无保底，比赛奖金作为唯一资金来源，开发组和产品组各分得一定权重，组内再按照贡献分出不同的权重分成（开发组的 commit 情况作为分配标准之一）
-
-## 经济模型
-
-1.车辆 freeMint，但是初始用户，但是需不需要通过质押的方式让用户直接氪金获得我们的代币去购买我们的 nft
-
-2.定价函数的确定（价格到达一定上线之后大部分玩家以差不多的价格买入配件的 nft
-
-3.可组合的 nft

@@ -18,8 +18,9 @@
   width: 55%;
   min-width: 820px;
   padding-top: 240px;
-  margin-left: 24%;
+  margin-left: 22%;
   display: flex;
+  justify-content: center;
   gap: 80px;
   flex-wrap: wrap;
 

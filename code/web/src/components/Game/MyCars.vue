@@ -18,12 +18,94 @@
     </div>
     <div class="right-parts" v-show="isDisplay">
       <div class="parts-title">PARTS</div>
-      <div class="parts-info"></div>
+      <div class="parts-info">
+
+        <div class="component-item">
+          <div class="top">
+            <div class="top-left">
+              <img src="../../assets/parts/grade1/1.png" class="component-icon">
+            </div>
+            <div class="top-right">
+              <div class="install-btn">install</div>
+              <div class="breakdown-btn" @click="sellComponent">sell</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <p class="bt-text">abrasion:</p>
+            <p class="bt-text">mining rate:</p>
+          </div>
+        </div>
+
+        <div class="component-item">
+          <div class="top">
+            <div class="top-left">
+              <img src="../../assets/parts/grade1/1.png" class="component-icon">
+            </div>
+            <div class="top-right">
+              <div class="install-btn">install</div>
+              <div class="breakdown-btn">breakdown</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <p class="bt-text">abrasion:</p>
+            <p class="bt-text">mining rate:</p>
+          </div>
+        </div>
+
+        <div class="component-item">
+          <div class="top">
+            <div class="top-left">
+              <img src="../../assets/parts/grade1/1.png" class="component-icon">
+            </div>
+            <div class="top-right">
+              <div class="install-btn">install</div>
+              <div class="breakdown-btn">breakdown</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <p class="bt-text">abrasion:</p>
+            <p class="bt-text">mining rate:</p>
+          </div>
+        </div>
+
+        <div class="component-item">
+          <div class="top">
+            <div class="top-left">
+              <img src="../../assets/parts/grade1/1.png" class="component-icon">
+            </div>
+            <div class="top-right">
+              <div class="install-btn">install</div>
+              <div class="breakdown-btn">breakdown</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <p class="bt-text">abrasion:</p>
+            <p class="bt-text">mining rate:</p>
+          </div>
+        </div>
+
+        <div class="component-item">
+          <div class="top">
+            <div class="top-left">
+              <img src="../../assets/parts/grade1/1.png" class="component-icon">
+            </div>
+            <div class="top-right">
+              <div class="install-btn">install</div>
+              <div class="breakdown-btn">breakdown</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <p class="bt-text">abrasion:</p>
+            <p class="bt-text">mining rate:</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { CONTRACT_ADDRESS_MUMBAI } from '@/const/Contracts';
 import { contractData } from '@/data/ContractData';
 import { playerData } from '@/data/PlayerData';
 import { walletData } from '@/data/WalletData';
@@ -82,7 +164,16 @@ const refreshCar = async () => {
     : [];
   //@ts-ignore
   userCarList.value = cars;
-  console.log('player cars info', await getComId(userCarList.value[0].tokenId))
+  // userCarList.value.map(e => {
+  //   Object.assign(e, {
+
+  //   })
+  // })
+  const carAddress6551 = await contractData.registry6551Contract.account(userCarList.value[0].tokenId, CONTRACT_ADDRESS_MUMBAI.CarERC721);
+  const tokenIdArr = await contractData.componentContract.getPlayerComponent(carAddress6551);
+  // TODO getcomid
+  const comId = await contractData.componentStoreContract.getComId();
+  console.log('carAddress6551:', carAddress6551, '\\ntokenidArr:', tokenIdArr);
   Loading.close();
 };
 
@@ -105,6 +196,10 @@ const funcFreeMintCar = async () => {
     Toast.error("Buy car failed");
   }
 };
+
+const sellComponent = async () => {
+
+}
 </script>
 
 <style scoped lang="less">
@@ -131,7 +226,8 @@ const funcFreeMintCar = async () => {
   top: 240px;
   background-color: rgba(60, 77, 97, 0.5);
   display: flex;
-  gap: 80px;
+  gap: 50px;
+  z-index: 5;
 
   .right-btn {
     position: absolute;
@@ -237,7 +333,7 @@ const funcFreeMintCar = async () => {
   }
 
   .right-parts {
-    width: 183px;
+    width: 235px;
     height: 662px;
     display: flex;
     flex-direction: column;
@@ -246,7 +342,7 @@ const funcFreeMintCar = async () => {
     .parts-title {
       margin-top: 60px;
       background-color: #FFFFFF;
-      width: 115px;
+      width: 125px;
       height: 50px;
       font-size: 20px;
       font-weight: 500;
@@ -259,6 +355,86 @@ const funcFreeMintCar = async () => {
       width: 100%;
       height: 600px;
       border: 1px #FFFFFF solid;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-wrap: nowrap;
+      overflow-y: auto;
+
+      .component-item {
+        height: 130px;
+        width: 100%;
+        background-color: rgb(45, 57, 76);
+
+        .top {
+          height: 80px;
+          display: flex;
+          flex-direction: row;
+
+          .top-left {
+            width: 150px;
+
+            .component-icon {
+              height: 100%;
+              width: 100%;
+            }
+          }
+
+          .top-right {
+            // margin-left: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+
+            .install-btn {
+              height: 25px;
+              width: 80px;
+              font-size: 12px;
+              color: #FFFFFF;
+              line-height: 25px;
+              font-weight: 600;
+              text-align: center;
+              background-color: rgb(37, 132, 245);
+              border-radius: 2px;
+
+              &:hover {
+                cursor: pointer;
+              }
+            }
+
+            .breakdown-btn {
+              height: 25px;
+              width: 80px;
+              font-size: 12px;
+              color: #FFFFFF;
+              line-height: 20px;
+              font-weight: 600;
+              text-align: center;
+              background-color: rgb(233, 207, 39);
+              border-radius: 2px;
+
+              &:hover {
+                cursor: pointer;
+              }
+            }
+          }
+        }
+
+        .bottom {
+          border-top: 2px solid #ffffff;
+          padding-top: 6px;
+          height: 50px;
+          width: 100%;
+
+          .bt-text {
+            margin-bottom: 4px;
+            margin-left: 8px;
+            color: #FFFFFF;
+            font-size: 14px;
+          }
+        }
+      }
     }
   }
 }

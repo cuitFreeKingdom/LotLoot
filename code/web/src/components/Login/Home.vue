@@ -3,12 +3,18 @@
     <div class="garage">
       <div class="car" v-for="(item, index) in playerParkingList" :key="index">
         <img class="elec" src="../../assets/game/elec-green.png" />
-        <div class="bottom-btn" v-show="item.status === 2">Leave</div>
+        <div class="elec-dis">{{ item.electric }}%</div>
+        <div class="mask-green" v-show="item.status === 2 && isMyCar(item.carOwner)"></div>
+        <div class="mask-red" v-show="item.status === 2 && !isMyCar(item.carOwner)"></div>
+        <div class="bottom-btn" v-show="item.status === 2" @click="unParkCar(item)">Leave</div>
         <div class="bottom-btn park-btn" v-show="item.status === 1" @click="parkCar(item)">Park</div>
-        <div class="bottom-btn ticket-btn" v-show="item.status !== 1 && item.status !== 2">Ticket</div>
+        <div class="bottom-btn ticket-btn" v-show="item.status !== 1 && item.status !== 2"
+          @click="ticketCar(item.tokenId)">Ticket</div>
         <img src="../../assets/topview/00.png" class="parking-car" v-show="item.status === 2">
       </div>
-      <div class="add-car" @click="buyParkingPlace"><img :src="require('../../assets/adddto.png')" class="add-png"></div>
+      <div class="add-car" @click="buyParkingPlace">
+        <img :src="require('../../assets/adddto.png')" class="add-png">
+      </div>
     </div>
 
     <MyCars />
@@ -90,7 +96,7 @@ const refreshCar = async () => {
 
 
 // buy parking
-const playerParkingList = ref<ParkingDTO[]>();
+const playerParkingList = ref<ParkingDTO[]>([]);
 const onParkingBought = async () => {
   await refreshHome();
   Loading.close();
@@ -108,9 +114,14 @@ const refreshHome = async () => {
         status: parking.status,
         carTokenId: parking.carTokenId,
         balance: 123.456,
-        tokenId: parking.tokenId,
+        tokenId: parking.tokenId
       };
     });
+    const res = await refreshCurrentElec();
+    console.log(res)
+    playerParkingList.value.map((e, i) => {
+      return Object.assign(e, { electric: res[i] })
+    })
     console.log('player parking list', playerParkingList.value)
   }
 };
@@ -118,7 +129,11 @@ const buyParkingPlace = async () => {
   // TODO Dialog
   Loading.open();
   try {
-    // BUG return undifined
+    // @ts-ignore
+    if (playerParkingList.value?.length > 0) {
+      Toast.warn("You already have parking space.")
+      return;
+    }
     await contractData.parkingStoreContract.buyParkings();
   } catch (e) {
     Toast.error("Buy parking place failed.");
@@ -127,6 +142,27 @@ const buyParkingPlace = async () => {
     Loading.close();
   }
 };
+
+const refreshCurrentElec = async (): Promise<number[]> => {
+  let res: number[] = [];
+  try {
+    const playerPL = playerParkingList.value;
+    if (playerPL.length === 0) {
+      return res;
+    } else {
+      const promiseArr = [];
+      for (let i = 0; i < playerPL.length; i++) {
+        promiseArr.push(contractData.lotLootContract.getCurrentElectric(playerPL[i].tokenId))
+      }
+      res = await Promise.all(promiseArr);
+      console.log('elec', res)
+      return res;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return res;
+}
 
 const parkCar = async (item: ParkingDTO) => {
   try {
@@ -146,7 +182,6 @@ const parkCar = async (item: ParkingDTO) => {
         Toast.warn('You have parked all your cars!');
         return;
       } else {
-        console.log('ddd', flag)
         console.log('park outcome', await contractData.lotLootContract.park(userCarList.value[flag].tokenId, item.tokenId));
       }
     }
@@ -174,12 +209,26 @@ const chooseParkCar = (): number => {
   return -1;
 }
 
-const unParkCar = async () => {
+const unParkCar = async (item: ParkingDTO) => {
+  Loading.open();
   try {
-
+    if (item.carTokenId === 0) {
+      Toast.warn("There is no car in this parking space yet!");
+      return;
+    }
+    console.log('unpark success', await contractData.lotLootContract.unPark(item.carTokenId));
   } catch (error) {
-
+    console.error(error);
+  } finally {
+    Loading.close();
   }
+}
+const isMyCar = async (address: string) => {
+  return address === walletData.address;
+}
+
+const ticketCar = async (parkId: number) => {
+  console.log('ticket car', await contractData.lotLootContract.fineCar(parkId));
 }
 </script>
 
@@ -195,11 +244,12 @@ const unParkCar = async () => {
 .garage {
   width: 55%;
   min-width: 820px;
-  padding-top: 240px;
-  margin-left: 24%;
+  padding-top: 230px;
+  margin-left: 22%;
   display: flex;
   gap: 80px;
   flex-wrap: wrap;
+  justify-content: center;
 
   .car {
     height: 290px;
@@ -210,9 +260,19 @@ const unParkCar = async () => {
     .elec {
       position: absolute;
       top: 6px;
-      left: 88px;
+      left: 80px;
       width: 45px;
       height: 30px;
+    }
+
+    .elec-dis {
+      position: absolute;
+      top: 13px;
+      left: 125px;
+      width: 45px;
+      font-size: 14px;
+      color: #FFFFFF;
+
     }
 
     .bottom-btn {
@@ -228,7 +288,7 @@ const unParkCar = async () => {
       line-height: 30px;
       text-align: center;
       border-radius: 3px;
-      z-index: 10;
+      z-index: 1;
 
       &:hover {
         cursor: pointer;
@@ -245,11 +305,30 @@ const unParkCar = async () => {
 
     .parking-car {
       position: absolute;
+      top: 35px;
+      left: 60px;
+      height: 210px;
+      width: 100px;
+      // background-color: rgba(38, 189, 57, 0.5);
+      z-index: 1;
+    }
+
+    .mask-green {
+      position: absolute;
       top: 10px;
       left: 10px;
-      height: 270px;
       width: 200px;
+      height: 270px;
       background-color: rgba(38, 189, 57, 0.5);
+    }
+
+    .mask-red {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 200px;
+      height: 270px;
+      background-color: rgba(176, 49, 96, 0.5);
     }
   }
 

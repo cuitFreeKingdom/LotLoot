@@ -6,12 +6,13 @@
       </a>
     </div>
     <div class="tab-btn" v-show="!isLogin">
-      <div class="tab-font">Game Rules</div>
-      <div class="tab-font">WhitePaper</div>
-      <div class="tab-font">Roadmap</div>
-      <div class="tab-font">Opensea</div>
-      <div class="tab-font">Twitter</div>
-      <div class="tab-font">About Us</div>
+      <a class="tab-font"
+        href="https://gitee.com/du-mingsong/warp-hack-thon/blob/master/%E7%99%BD%E7%9A%AE%E4%B9%A6.md">WhitePaper</a>
+      <!-- <a class="tab-font">Roadmap</a> -->
+      <a class="tab-font" href="https://testnets.opensea.io/zh-CN/collection/lotlootcar-1">Opensea</a>
+      <a class="tab-font" href="https://twitter.com/Lotloot_gamefi">Twitter</a>
+      <a class="tab-font" href="https://github.com/cuitFreeKingdom/LotLoot">Github</a>
+      <a class="tab-font" href="https://gitee.com/du-mingsong/warp-hack-thon">About Us</a>
     </div>
 
     <div class="tab-status" v-show="isLogin">
@@ -253,6 +254,7 @@ export default defineComponent({
     .tab-font {
       font-size: 16px;
       color: rgb(255, 255, 255);
+      text-decoration: 0px;
 
       &:hover {
         cursor: pointer;

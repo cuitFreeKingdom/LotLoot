@@ -31,6 +31,7 @@ export class ContractLotLoot extends ContractBase {
     return parkingTokenId.toNumber();
   }
 
+  // 获取车位停车信息
   async getParkingCar(parkingTokenId: number): Promise<number> {
     const carTokenId = await this.contract.viewParkOnCar(parkingTokenId);
     return carTokenId.toNumber();
