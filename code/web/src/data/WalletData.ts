@@ -212,6 +212,14 @@ export class WalletData extends Singleton {
   }
 
   public async disconnect() {
+    await this.ethereum.request({
+      "method": "wallet_revokePermissions",
+      "params": [
+        {
+          "eth_accounts": {}
+        }
+      ]
+    });
     this.data.address = "";
     this.data.chainId = -1;
     await IndexDB.instance.deleteItem(this.cacheKey);

@@ -8,7 +8,7 @@
           transparently secured on the blockchain. Explore, acquire, and be part of the future of digital art.</p>
 
       </div>
-      <div class="play-btn">Explore On Opensea →</div>
+      <a class="play-btn" href="https://testnets.opensea.io/zh-CN/collection/lotlootcar-1">Explore On Opensea →</a>
     </div>
     <div class="right wow fadeIn" data-wow-duration="1.5s" data-wow-delay="0.5s">
       <img class="logo" :src="require('../assets/cyber-car.png')">
@@ -77,6 +77,7 @@ export default defineComponent({
       font-size: 20px;
       line-height: 24px;
       font-weight: 600;
+      text-decoration: 0px;
 
       &:hover {
         cursor: pointer;

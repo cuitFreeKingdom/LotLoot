@@ -38,4 +38,8 @@ export class ContractComponentStore extends ContractBase {
     const comId = await this.contract.getComId(tokenId);
     return comId.toNumber();
   }
+  async getGrade(tokenId: number): Promise<number> {
+    const grade = await this.contract.getGrade(tokenId);
+    return grade.toNumber();
+  }
 }
