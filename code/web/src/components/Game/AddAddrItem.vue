@@ -1,19 +1,26 @@
 <template>
   <div class="address-item">
-    <input class="edit-note" type="text" :value="noteText" />
-    <input class="edit-addr" type="text" :value="addrText">
+    <input class="edit-note" type="text" v-model="noteText" placeholder="input notes" />
+    <input class="edit-addr" type="text" v-model="addrText" placeholder="input address">
     <div class="operation-btn">
-      <img src="../../assets/false-icon.png" class="btn">
-      <img src="../../assets/true-icon.png" class="btn">
+      <img src="../../assets/false-icon.png" class="btn" @click="cancleAdd">
+      <img src="../../assets/true-icon.png" class="btn" @click="confirmAdd">
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+const emit = defineEmits(['cancle', 'confirm']);
 
-const noteText = ref<string>('秋名山车神');
-const addrText = ref<string>('0x2BDa......3685')
+const noteText = ref<string>('');
+const addrText = ref<string>('');
+const cancleAdd = () => {
+  emit('cancle');
+}
+const confirmAdd = () => {
+  emit('confirm', addrText.value, noteText.value);
+}
 </script>
 
 <style scoped lang="less">

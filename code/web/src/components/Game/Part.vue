@@ -1,9 +1,24 @@
 <template>
   <div class="part">
-    <img :src="require('../../assets/car-part.png')" class="part-icon">
-    <div class="info"></div>
+    <img :src="img_src" class="part-icon">
+    <div class="info">{{ props.infoText }}</div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+interface Props {
+  assetsPath: string,
+  infoText: string,
+};
+const props = withDefaults(defineProps<Props>(), {
+  assetsPath: '../../assets/car-part.png',
+  infoText: 'aaa'
+});
+
+const img_src = ref(`require(${props.assetsPath})`);
+</script>
 
 <style scoped lang="less">
 .part {
@@ -13,10 +28,17 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 20px;
 
   .part-icon {
     height: 100px;
     width: 100px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(57, 69, 84, 0.9);
+      opacity: 0.5;
+    }
   }
 
   .info {

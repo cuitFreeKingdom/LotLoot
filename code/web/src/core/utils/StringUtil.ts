@@ -12,4 +12,11 @@ export class StringUtil {
     }
     return res;
   }
+
+  static getAddressSnapshot(str: string) {
+    if (str.length <= 16) {
+      return str;
+    }
+    return str.substring(0, 16) + '......';
+  }
 }

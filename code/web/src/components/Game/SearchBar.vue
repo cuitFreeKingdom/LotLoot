@@ -13,6 +13,8 @@ import { walletData } from "../../data/WalletData";
 import { GO_HOME, REG_ETH_ADDRESS } from "../../const/Constants";
 import { Toast } from "../../plugins/Toast";
 import { StringUtil } from "../../core/utils/StringUtil";
+import { getFriendList, addFriend } from '@/request/addressBook'
+import { Loading } from "@/plugins/Loading";
 
 export default defineComponent({
   name: "SearchBar",
@@ -45,7 +47,20 @@ export default defineComponent({
         return;
       }
 
-      EventBus.instance.emit(GameEventGoFriendHome.event, inputValue);
+      const playerAddressBook: any[] = (await getFriendList(walletData.address)).data
+      if (!playerAddressBook.includes(inputValue)) {
+        const res = await addFriend({
+          address: walletData.address,
+          friendAddress: inputValue,
+          notes: ''
+        });
+        EventBus.instance.emit(GameEventGoFriendHome.event, inputValue);
+        // @ts-ignore
+        if (res.code === '200') {
+          Toast.success(`Add friend success`);
+          return;
+        }
+      }
     };
 
     return {

@@ -73,5 +73,14 @@ export class PlayerData extends Singleton {
     const components = await contractData.componentContract.getPlayerComponent(address);
     return components;
   }
+
+  async purchaseComponent(id: number, grade: number) {
+    const res = await contractData.componentStoreContract.buy(id, grade);
+    return res;
+  }
+
+  async getComponentId(tokenId: number) {
+    return await contractData.componentStoreContract.getComId(tokenId);
+  }
 }
 export const playerData: Readonly<PlayerData> = PlayerData.getInstance();
