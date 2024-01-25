@@ -2,12 +2,18 @@
   <div class="welcome-sec">
     <div class="head">
       <p class="head-font wow fadeInLeft" data-wow-duration="1.2s">Game Rules</p>
-      <p class="wow fadeInRight" data-wow-duration="1.2s">
+      <p class="wow fadeInRight aaa" data-wow-duration="1.2s">
         <span class="font-pre">Parking Space and Car Rules: </span>
-        <span class="font-con">Each player has 5 parking spaces, with one parking space for their own use, and the
-          remaining 4 parking spaces can be used by other players. When a car is parked in a space, it generates token
-          income every second based on the car's quality. The income is capped at 24 hours, after which the car needs to
-          be moved to collect the earnings. The car's quality and income rate can be upgraded by spending tokens.</span>
+        <span class="font-con">Each player has 5 parking Spaces, parking space can park
+          their own car, can also be seized by friends, when the vehicle is parked in the parking space, the vehicle can
+          change with time and gain (LLT token), income speed and wheel level is proportional to the maximum income time
+          determined by the body level, when their parking space is seized by friends, You can put a ticket on it and
+          receive a portion of the proceeds, and the proportion of the proceeds is determined by the class of your
+          friend's license plate. The higher class license plate will resist the force of the fine, but don't worry, your
+          friend will not park wirelessly in your spot, because the components of the vehicle (tires, body, license plate)
+          will also wear out while helping your friend earn revenue. Recovery of component wear is performed only when the
+          vehicle carrying the component is parked in its own parking space. The repair process consumes the parking
+          space's power, which can only be restored if the space is parked by a friend.</span>
       </p>
     </div>
 
@@ -68,6 +74,10 @@ export default defineComponent({
       font-weight: 700;
       color: #000000;
       margin-bottom: 12px;
+    }
+
+    .aaa {
+      text-align: left;
     }
 
     .font-pre {

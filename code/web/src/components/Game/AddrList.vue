@@ -148,6 +148,7 @@ const confirmAddItem = async (addr: string, notes: string) => {
   align-items: center;
   justify-content: space-between;
   padding: 0px 10px 0px 10px;
+  z-index: 2;
 
   .address-text {
     color: #ffffff;
@@ -176,6 +177,7 @@ const confirmAddItem = async (addr: string, notes: string) => {
   top: 263px;
   right: 20px;
   overflow-y: auto;
+  z-index: 2;
 
   .add-item {
     margin-top: 12px;
