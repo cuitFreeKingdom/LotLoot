@@ -10,7 +10,8 @@
         <div class="bottom-btn park-btn" v-show="item.status === 1" @click="parkCar(item)">Park</div>
         <div class="bottom-btn ticket-btn" v-show="item.status !== 1 && item.status !== 2"
           @click="ticketCar(item.tokenId)">Ticket</div>
-        <img src="../../assets/topview/00.png" class="parking-car" v-show="item.status === 2">
+        <img :src="require(`../../assets/topview/${item.partsInfo?.body || 0}${item.partsInfo?.plate || 0}.png`)"
+          class="parking-car" v-if="item.status !== 1">
       </div>
       <div class="add-car" @click="buyParkingPlace">
         <img :src="require('../../assets/adddto.png')" class="add-png">
@@ -36,6 +37,7 @@ import { GameEventWalletConnected } from "@/events/GameEventWalletConnected";
 import { GameEventBuyParkings } from "@/events/GameEventBuyParkings";
 import { GameEventWalletAccountChanged } from "@/events/GameEventWalletAccountChanged";
 import { GameEventParkCar } from "@/events/GameEventParkCar";
+import { CONTRACT_ADDRESS_MUMBAI } from "@/const/Contracts";
 
 interface CarItem {
   tokenId: number;
@@ -72,7 +74,7 @@ onUnmounted(() => {
 //buy car 
 const onCarBought = async () => {
   await refreshCar();
-  Toast.success(`mint car success.`)
+  // Toast.success(`mint car success.`)
 }
 const userCarList = ref<CarItem[]>([]);
 const refreshCar = async () => {
@@ -90,9 +92,66 @@ const refreshCar = async () => {
     })
     : [];
   userCarList.value = cars;
-  console.log('current carlist', userCarList.value)
+
   Loading.close();
 };
+const showCarInfo = async (tokenId: number[]): Promise<Array<number[]>> => {
+  let carAddrList: string[] = [];
+  let tokenIdList: Array<number[]> = [];
+  const promiseArr = [];
+  const promiseIdArr = [];
+  for (let i = 0; i < tokenId.length; i++) {
+    promiseArr.push(contractData.registry6551Contract.account(tokenId[i], CONTRACT_ADDRESS_MUMBAI.CarERC721));
+  }
+  carAddrList = await Promise.all(promiseArr);
+  for (let i = 0; i < carAddrList.length; i++) {
+    promiseIdArr.push(contractData.componentContract.getPlayerComponent(carAddrList[i]));
+  }
+  tokenIdList = await Promise.all(promiseIdArr);
+  return tokenIdList;
+}
+interface CarComInfo {
+  tire: number,
+  body: number,
+  plate: number,
+}
+const getAllCom = async (tokenIdArr: number[]) => {
+  let allComList: CarComInfo = {
+    tire: 0,
+    body: 0,
+    plate: 0,
+  };
+  if (tokenIdArr.length === 0) {
+    return allComList;
+  }
+  // 每辆车最多安装3个组件
+  if (tokenIdArr.length > 3) {
+    Toast.warn('Install up to three parts per vehicle!');
+    return allComList;
+  }
+
+  let promiseIdArr = [];
+  let promiseGradeArr = [];
+  for (let i = 0; i < tokenIdArr.length; i++) {
+    promiseIdArr.push(contractData.componentStoreContract.getComId(tokenIdArr[i]));
+    promiseGradeArr.push(contractData.componentStoreContract.getGrade(tokenIdArr[i]));
+  }
+  const idArr = await Promise.all(promiseIdArr);
+  const gradeArr = await Promise.all(promiseGradeArr);
+  console.log('grade', gradeArr)
+  for (let i = 0; i < tokenIdArr.length; i++) {
+    if (idArr[i] === 1) {
+      allComList.tire = gradeArr[i] - 1;
+    }
+    if (idArr[i] === 2) {
+      allComList.body = gradeArr[i] - 1;
+    }
+    if (idArr[i] === 3) {
+      allComList.plate = gradeArr[i] - 1;
+    }
+  }
+  return allComList;
+}
 
 
 // buy parking
@@ -118,11 +177,25 @@ const refreshHome = async () => {
       };
     });
     const res = await refreshCurrentElec();
-    console.log(res)
+    let allParkedCarTokenId: number[] = [];
     playerParkingList.value.map((e, i) => {
+      allParkedCarTokenId.push(e.carTokenId)
       return Object.assign(e, { electric: res[i] })
     })
-    console.log('player parking list', playerParkingList.value)
+
+    // 获取所有车辆的tokenId数组
+    const resArr = await showCarInfo(allParkedCarTokenId);
+    // 将每辆车的TokenId数组转化成对应的组件的类别和等级
+    let promiseComArr = [];
+    for (let i = 0; i < allParkedCarTokenId.length; i++) {
+      promiseComArr.push(getAllCom(resArr[i]))
+    }
+    const allComList = await Promise.all(promiseComArr);
+    playerParkingList.value.map((e, i) => {
+      return Object.assign(e, { partsTokenIdList: resArr[i] }, { partsInfo: allComList[i] })
+    });
+    // console.log('yyy', playerParkingList.value)
+
   }
 };
 const buyParkingPlace = async () => {

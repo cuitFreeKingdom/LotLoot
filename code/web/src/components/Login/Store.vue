@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="all-store" v-show="currentTabIndex === 0">
-      <span v-for="(grade, index1) in [1, 2, 3, 4]" :key="index1 + 'q'">
+      <span v-for="(grade, index1) in [2, 3, 4]" :key="index1 + 'q'">
         <span v-for="(part, index2) in [1, 2, 3]" :key="index2 + 'w'">
           <div class="part">
             <img :src="require(`../../assets/parts/grade${grade}/${part}.png`)" class="part-icon"
@@ -20,7 +20,7 @@
       </span>
     </div>
     <div class="all-com" v-show="currentTabIndex === 1">
-      <div class="part" v-for="(grade, index) in [1, 2, 3, 4]" :key="index">
+      <div class="part" v-for="(grade, index) in [2, 3, 4]" :key="index">
         <img :src="require(`../../assets/parts/grade${grade}/1.png`)" class="part-icon">
         <div class="info">
           <h3 class="text-title">Tire</h3>
@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="all-com" v-show="currentTabIndex === 2">
-      <div class="part" v-for="(grade, index) in [1, 2, 3, 4]" :key="index">
+      <div class="part" v-for="(grade, index) in [2, 3, 4]" :key="index">
         <img :src="require(`../../assets/parts/grade${grade}/2.png`)" class="part-icon">
         <div class="info">
           <h3 class="text-title">body</h3>
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="all-com" v-show="currentTabIndex === 3">
-      <div class="part" v-for="(grade, index) in [1, 2, 3, 4]" :key="index">
+      <div class="part" v-for="(grade, index) in [2, 3, 4]" :key="index">
         <img :src="require(`../../assets/parts/grade${grade}/3.png`)" class="part-icon">
         <div class="info">
           <h3 class="text-title">Plate</h3>
@@ -212,9 +212,9 @@ const switchTab = (index: number) => {
   // top: 240px;
   padding-top: 200px;
   padding-bottom: 20px;
-  width: 60%;
-  min-width: 842px;
-  margin-left: 20%;
+  width: 40%;
+  min-width: 642px;
+  margin-left: 26%;
   display: flex;
   gap: 100px;
   flex-wrap: wrap;
@@ -271,9 +271,9 @@ const switchTab = (index: number) => {
 .all-com {
   padding-top: 200px;
   padding-bottom: 20px;
-  width: 50%;
-  min-width: 842px;
-  margin-left: 20%;
+  width: 40%;
+  min-width: 642px;
+  margin-left: 26%;
   display: flex;
   gap: 100px;
   flex-wrap: wrap;

@@ -10,7 +10,8 @@
         <div class="mask-red" v-show="item.isParked && !isMyCar(item.carOwner)"></div>
         <div class="bottom-btn" v-show="item.isParked && isMyCar(item.carOwner)" @click="unParkCar(item)">Leave</div>
         <div class="bottom-btn park-btn" v-show="!item.isParked" @click="parkCar(item)">Park</div>
-        <img src="../../assets/topview/00.png" class="parking-car" v-show="item.isParked">
+        <img :src="require(`../../assets/topview/${item.partsInfo?.body || 0}${item.partsInfo?.plate || 0}.png`)"
+          class="parking-car" v-show="item.isParked">
       </div>
     </div>
     <Dialog ref="confirmRef" confirmBtnText="YES" cancelBtnText="NO" @confirm="confirmMessage" @cancel="cancelMessage" />
@@ -31,6 +32,7 @@ import { walletData } from "@/data/WalletData";
 import { EventBus } from "@/plugins/EventBus";
 import { GameEventParkCar } from "@/events/GameEventParkCar";
 import { contractData } from "@/data/ContractData";
+import { CONTRACT_ADDRESS_MUMBAI } from "@/const/Contracts";
 interface CarItem {
   tokenId: number;
   status: any;
@@ -70,6 +72,21 @@ const getPlayerParking = async (address: string) => {
       Toast.warn('This account has not parking!');
       return;
     } else {
+      let allParkedCarTokenId: number[] = [];
+      player.parkings.map((e, i) => {
+        allParkedCarTokenId.push(e.carTokenId);
+      });
+      // 获取所有车辆的tokenId数组
+      const resArr = await showCarInfo(allParkedCarTokenId);
+      // 将每辆车的TokenId数组转化成对应的组件的类别和等级
+      let promiseComArr = [];
+      for (let i = 0; i < allParkedCarTokenId.length; i++) {
+        promiseComArr.push(getAllCom(resArr[i]))
+      }
+      const allComList = await Promise.all(promiseComArr);
+      player.parkings.map((e, i) => {
+        return Object.assign(e, { partsTokenIdList: resArr[i] }, { partsInfo: allComList[i] })
+      });
       playerParkingList.value = player.parkings;
     }
     console.log('friend', player)
@@ -81,6 +98,64 @@ const getPlayerParking = async (address: string) => {
 }
 const resetPlayerParkingList = async () => {
   playerParkingList.value = [];
+}
+
+const showCarInfo = async (tokenId: number[]): Promise<Array<number[]>> => {
+  let carAddrList: string[] = [];
+  let tokenIdList: Array<number[]> = [];
+  const promiseArr = [];
+  const promiseIdArr = [];
+  for (let i = 0; i < tokenId.length; i++) {
+    promiseArr.push(contractData.registry6551Contract.account(tokenId[i], CONTRACT_ADDRESS_MUMBAI.CarERC721));
+  }
+  carAddrList = await Promise.all(promiseArr);
+  for (let i = 0; i < carAddrList.length; i++) {
+    promiseIdArr.push(contractData.componentContract.getPlayerComponent(carAddrList[i]));
+  }
+  tokenIdList = await Promise.all(promiseIdArr);
+  return tokenIdList;
+}
+interface CarComInfo {
+  tire: number,
+  body: number,
+  plate: number,
+}
+const getAllCom = async (tokenIdArr: number[]) => {
+  let allComList: CarComInfo = {
+    tire: 0,
+    body: 0,
+    plate: 0,
+  };
+  if (tokenIdArr.length === 0) {
+    return allComList;
+  }
+  // 每辆车最多安装3个组件
+  if (tokenIdArr.length > 3) {
+    Toast.warn('Install up to three parts per vehicle!');
+    return allComList;
+  }
+
+  let promiseIdArr = [];
+  let promiseGradeArr = [];
+  for (let i = 0; i < tokenIdArr.length; i++) {
+    promiseIdArr.push(contractData.componentStoreContract.getComId(tokenIdArr[i]));
+    promiseGradeArr.push(contractData.componentStoreContract.getGrade(tokenIdArr[i]));
+  }
+  const idArr = await Promise.all(promiseIdArr);
+  const gradeArr = await Promise.all(promiseGradeArr);
+  console.log('grade', gradeArr)
+  for (let i = 0; i < tokenIdArr.length; i++) {
+    if (idArr[i] === 1) {
+      allComList.tire = gradeArr[i] - 1;
+    }
+    if (idArr[i] === 2) {
+      allComList.body = gradeArr[i] - 1;
+    }
+    if (idArr[i] === 3) {
+      allComList.plate = gradeArr[i] - 1;
+    }
+  }
+  return allComList;
 }
 
 const unParkCar = async (item: ParkingDTO) => {

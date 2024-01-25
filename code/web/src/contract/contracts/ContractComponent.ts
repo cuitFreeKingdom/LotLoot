@@ -44,11 +44,11 @@ export class ContractComponent extends ContractBase {
     }
   }
 
-  async getComIdAndGrade(tokenId: number): Promise<[number, number]> {
-    const comId = await this.contract.getComId(tokenId);
-    const grade = await this.contract.getGrade(tokenId);
-    return [comId, grade];
-  }
+  // async getComIdAndGrade(tokenId: number): Promise<[number, number]> {
+  //   const comId = await this.contract.getComId(tokenId);
+  //   const grade = await this.contract.getGrade(tokenId);
+  //   return [comId, grade];
+  // }
 
   public registerEvents() {
     // TODO

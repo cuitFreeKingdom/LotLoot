@@ -14,6 +14,11 @@ export class ParkingDTO extends BaseDTO {
 
   account: string = "";
   electric: number = 0;
+  partsInfo: {
+    tire: number,
+    body: number,
+    plate: number
+  } = {tire: 0, body: 0, plate: 0}
 
   public get isMyParking(): boolean {
     return this.owner === walletData.address;
