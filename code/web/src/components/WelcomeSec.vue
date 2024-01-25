@@ -19,7 +19,11 @@
 
 
     <div class="video wow zoomIn" data-wow-duration="1.2s">
-      <iframe width="672" height="400" src="https://www.youtube.com/embed/WsRujp43jzY" frameborder="0"
+      <!-- <iframe width="672" height="400" src="https://www.youtube.com/watch?v=pD-4gR-98V4" frameborder="0"
+        allowfullscreen></iframe> -->
+      <iframe width="672" height="400" src="https://www.youtube.com/embed/pD-4gR-98V4?si=pPj-jev8oWuOTzdt"
+        title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen></iframe>
     </div>
   </div>
@@ -95,5 +99,4 @@ export default defineComponent({
       // text-align: left;
     }
   }
-}
-</style>
+}</style>
