@@ -19,13 +19,16 @@
     <div class="middle-info" v-if="isDisplay">
       <img
         :src="require(`../../assets/mixed/${userCarList.length === 0 ? 0 : userCarList[currentPickCar].partsInfo?.body}${userCarList.length === 0 ? 0 : userCarList[currentPickCar].partsInfo?.plate}${userCarList.length === 0 ? 0 : userCarList[currentPickCar].partsInfo?.tire}.png`)"
-        class="rcar-info">
-      <div class="car-info">
-        <p class="text">LLT: {{ userCarList[currentPickCar].ProspectiveEarnings }}</p>
-        <p class="text">ID: {{ userCarList[currentPickCar].tokenId }}</p>
-        <p class="text">Max Parking Time: {{ LEVEL_MAP[1][userCarList[currentPickCar].partsInfo?.body || 0] }}hours</p>
-        <p class="text">Mining Rate: {{ LEVEL_MAP[0][userCarList[currentPickCar].partsInfo?.tire || 0] }}%</p>
-        <p class="text">Tax Reliefs: {{ LEVEL_MAP[2][userCarList[currentPickCar].partsInfo?.plate || 0] }}%</p>
+        class="rcar-info" v-show="userCarList.length > 0">
+      <div class="car-info" v-show="userCarList.length > 0">
+        <p class="text">LLT: {{ userCarList.length === 0 ? '' : userCarList[currentPickCar].ProspectiveEarnings }}</p>
+        <p class="text">ID: {{ userCarList.length === 0 ? '' : userCarList[currentPickCar].tokenId }}</p>
+        <p class="text">Max Parking Time: {{ userCarList.length === 0 ? '' :
+          LEVEL_MAP[1][userCarList[currentPickCar].partsInfo?.body || 0] }}hours</p>
+        <p class="text">Mining Rate: {{ userCarList.length === 0 ? '' :
+          LEVEL_MAP[0][userCarList[currentPickCar].partsInfo?.tire || 0] }}%</p>
+        <p class="text">Tax Reliefs: {{ userCarList.length === 0 ? '' :
+          LEVEL_MAP[2][userCarList[currentPickCar].partsInfo?.plate || 0] }}%</p>
         <p class="text">parts && abrasion:</p>
         <div class="part-abrasion">
           <div class="part-icon-box" v-for="(item, index) in playerAllComInfo" :key="index"
